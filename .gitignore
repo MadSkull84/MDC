@@ -1,0 +1,10 @@
+*.ini
+*.dcu
+*.exe
+*.~*
+*.local
+*.identcache
+*.dll
+*.stat
+*.res
+*.mad

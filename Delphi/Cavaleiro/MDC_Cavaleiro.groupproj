@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{52A50D98-4EF4-454E-8D8B-7D671321100C}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="20 - Array DML\Array_DML.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="18 - Lembrestes\Lembrestes.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Array_DML">
+        <MSBuild Projects="20 - Array DML\Array_DML.dproj"/>
+    </Target>
+    <Target Name="Array_DML:Clean">
+        <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Array_DML:Make">
+        <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Lembrestes">
+        <MSBuild Projects="18 - Lembrestes\Lembrestes.dproj"/>
+    </Target>
+    <Target Name="Lembrestes:Clean">
+        <MSBuild Projects="18 - Lembrestes\Lembrestes.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Lembrestes:Make">
+        <MSBuild Projects="18 - Lembrestes\Lembrestes.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Array_DML;Lembrestes"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Array_DML:Clean;Lembrestes:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Array_DML:Make;Lembrestes:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
