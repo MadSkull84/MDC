@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 306
+  Caption = 'Importa'#231#227'o Array DML'
+  ClientHeight = 275
   ClientWidth = 482
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -11,62 +11,107 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesktopCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object lblCaminhoDoArquivo: TLabel
     Left = 8
     Top = 8
     Width = 95
     Height = 13
     Caption = 'Caminho do arquivo'
   end
-  object SpeedButton1: TSpeedButton
-    Left = 456
+  object btnSelecionarArquivo: TSpeedButton
+    Left = 451
     Top = 24
     Width = 23
     Height = 22
     Caption = '...'
     Flat = True
-    OnClick = SpeedButton1Click
+    OnClick = btnSelecionarArquivoClick
   end
-  object Label2: TLabel
+  object lblDados: TLabel
     Left = 8
-    Top = 120
+    Top = 88
     Width = 34
     Height = 13
     Caption = 'Dados:'
   end
-  object SpeedButton2: TSpeedButton
+  object btnImportar: TSpeedButton
     Left = 8
     Top = 51
-    Width = 95
+    Width = 466
     Height = 22
     Caption = 'Importar'
     Flat = True
-    OnClick = SpeedButton2Click
+    OnClick = btnImportarClick
   end
-  object Edit1: TEdit
+  object edtCaminhoDoArquivo: TEdit
     Left = 8
     Top = 24
-    Width = 449
+    Width = 442
     Height = 21
     ReadOnly = True
     TabOrder = 0
   end
-  object DBGrid1: TDBGrid
+  object grdDados: TDBGrid
     Left = 8
-    Top = 136
+    Top = 104
     Width = 466
     Height = 162
-    DataSource = DataSource1
+    DataSource = dsrDados
+    ReadOnly = True
     TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -11
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
+    Columns = <
+      item
+        Expanded = False
+        FieldName = 'ID'
+        Width = 50
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'NOME'
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'CIDADE'
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'EMAIL'
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'DATANASC'
+        Width = 80
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'PROFISSAO'
+        Width = 150
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'CARTAO'
+        Width = 80
+        Visible = True
+      end>
   end
-  object FDConnection1: TFDConnection
+  object FDConnection: TFDConnection
     Params.Strings = (
       'Database=G:\Documentos\Delphi\ARRAY_DML.FDB'
       'User_Name=SYSDBA'
@@ -80,11 +125,11 @@ object Form1: TForm1
   object OpenDialog1: TOpenDialog
     DefaultExt = '*.csv'
     Filter = '*.csv|*.csv'
-    Left = 416
-    Top = 8
+    Left = 424
+    Top = 56
   end
-  object FDQuery1: TFDQuery
-    Connection = FDConnection1
+  object fdqImportacao: TFDQuery
+    Connection = FDConnection
     SQL.Strings = (
       'INSERT INTO FUNCIONARIO '
       '(ID,NOME,CIDADE,EMAIL,DATANASC,PROFISSAO,CARTAO) '
@@ -95,71 +140,133 @@ object Form1: TForm1
     ParamData = <
       item
         Name = 'ID'
+        DataType = ftInteger
         ParamType = ptInput
       end
       item
         Name = 'NOME'
+        DataType = ftString
         ParamType = ptInput
+        Size = 500
       end
       item
         Name = 'CIDADE'
+        DataType = ftString
         ParamType = ptInput
+        Size = 500
       end
       item
         Name = 'EMAIL'
+        DataType = ftString
         ParamType = ptInput
+        Size = 500
       end
       item
         Name = 'DATANASC'
+        DataType = ftDate
         ParamType = ptInput
       end
       item
         Name = 'PROFISSAO'
+        DataType = ftString
         ParamType = ptInput
+        Size = 500
       end
       item
         Name = 'CARTAO'
+        DataType = ftString
         ParamType = ptInput
+        Size = 500
       end>
-    object FDQuery1ID: TIntegerField
+    object fdqImportacaoID: TIntegerField
       FieldName = 'ID'
       Origin = 'ID'
       ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
       Required = True
     end
-    object FDQuery1NOME: TStringField
+    object fdqImportacaoNOME: TStringField
       FieldName = 'NOME'
       Origin = 'NOME'
       Size = 500
     end
-    object FDQuery1CIDADE: TStringField
+    object fdqImportacaoCIDADE: TStringField
       FieldName = 'CIDADE'
       Origin = 'CIDADE'
       Size = 500
     end
-    object FDQuery1EMAIL: TStringField
+    object fdqImportacaoEMAIL: TStringField
       FieldName = 'EMAIL'
       Origin = 'EMAIL'
       Size = 500
     end
-    object FDQuery1DATANASC: TDateField
+    object fdqImportacaoDATANASC: TDateField
       FieldName = 'DATANASC'
       Origin = 'DATANASC'
     end
-    object FDQuery1PROFISSAO: TStringField
+    object fdqImportacaoPROFISSAO: TStringField
       FieldName = 'PROFISSAO'
       Origin = 'PROFISSAO'
       Size = 500
     end
-    object FDQuery1CARTAO: TStringField
+    object fdqImportacaoCARTAO: TStringField
       FieldName = 'CARTAO'
       Origin = 'CARTAO'
       Size = 500
     end
   end
-  object DataSource1: TDataSource
-    DataSet = FDQuery1
+  object dsrDados: TDataSource
+    AutoEdit = False
+    DataSet = fdqConsulta
+    Left = 312
+    Top = 168
+  end
+  object fdqConsulta: TFDQuery
+    Connection = FDConnection
+    SQL.Strings = (
+      'select * from FUNCIONARIO')
     Left = 312
     Top = 120
+    object fdqConsultaID: TIntegerField
+      DisplayLabel = 'Id'
+      FieldName = 'ID'
+      Origin = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object fdqConsultaNOME: TStringField
+      DisplayLabel = 'Nome'
+      FieldName = 'NOME'
+      Origin = 'NOME'
+      Size = 500
+    end
+    object fdqConsultaCIDADE: TStringField
+      DisplayLabel = 'Cidade'
+      FieldName = 'CIDADE'
+      Origin = 'CIDADE'
+      Size = 500
+    end
+    object fdqConsultaEMAIL: TStringField
+      DisplayLabel = 'e-mail'
+      FieldName = 'EMAIL'
+      Origin = 'EMAIL'
+      Size = 500
+    end
+    object fdqConsultaDATANASC: TDateField
+      DisplayLabel = 'Dt. Nascimento'
+      FieldName = 'DATANASC'
+      Origin = 'DATANASC'
+    end
+    object fdqConsultaPROFISSAO: TStringField
+      DisplayLabel = 'Profiss'#227'o'
+      FieldName = 'PROFISSAO'
+      Origin = 'PROFISSAO'
+      Size = 500
+    end
+    object fdqConsultaCARTAO: TStringField
+      DisplayLabel = 'Cart'#227'o'
+      FieldName = 'CARTAO'
+      Origin = 'CARTAO'
+      Size = 500
+    end
   end
 end

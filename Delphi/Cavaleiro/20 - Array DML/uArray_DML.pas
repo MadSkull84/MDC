@@ -14,25 +14,26 @@ uses
 
 type
   TForm1 = class(TForm)
-    FDConnection1: TFDConnection;
-    Label1: TLabel;
-    Edit1: TEdit;
-    SpeedButton1: TSpeedButton;
+    FDConnection: TFDConnection;
+    lblCaminhoDoArquivo: TLabel;
+    edtCaminhoDoArquivo: TEdit;
+    btnSelecionarArquivo: TSpeedButton;
     OpenDialog1: TOpenDialog;
-    DBGrid1: TDBGrid;
-    Label2: TLabel;
-    FDQuery1: TFDQuery;
-    DataSource1: TDataSource;
-    SpeedButton2: TSpeedButton;
-    FDQuery1ID: TIntegerField;
-    FDQuery1NOME: TStringField;
-    FDQuery1CIDADE: TStringField;
-    FDQuery1EMAIL: TStringField;
-    FDQuery1DATANASC: TDateField;
-    FDQuery1PROFISSAO: TStringField;
-    FDQuery1CARTAO: TStringField;
-    procedure SpeedButton1Click(Sender: TObject);
-    procedure SpeedButton2Click(Sender: TObject);
+    grdDados: TDBGrid;
+    lblDados: TLabel;
+    fdqImportacao: TFDQuery;
+    dsrDados: TDataSource;
+    btnImportar: TSpeedButton;
+    fdqConsulta: TFDQuery;
+    fdqConsultaID: TIntegerField;
+    fdqConsultaNOME: TStringField;
+    fdqConsultaCIDADE: TStringField;
+    fdqConsultaEMAIL: TStringField;
+    fdqConsultaDATANASC: TDateField;
+    fdqConsultaPROFISSAO: TStringField;
+    fdqConsultaCARTAO: TStringField;
+    procedure btnSelecionarArquivoClick(Sender: TObject);
+    procedure btnImportarClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -46,55 +47,69 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.SpeedButton1Click(Sender: TObject);
+procedure TForm1.btnSelecionarArquivoClick(Sender: TObject);
 begin
   OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
   if OpenDialog1.Execute() then
-    Edit1.Text := OpenDialog1.FileName;
+    edtCaminhoDoArquivo.Text := OpenDialog1.FileName;
 end;
 
-procedure TForm1.SpeedButton2Click(Sender: TObject);
+procedure TForm1.btnImportarClick(Sender: TObject);
 var
-  lStringListFile: TStringList;
-  lStringListLine: TStringList;
-  lCounter: integer;
+  lListaDosRegistros: TStringList;
+  lListaDosValores: TStringList;
+  lLinha: integer;
   lTempo: TStopwatch;
 begin
-  lTempo := TStopwatch.StartNew;
-
-  lStringListFile := TStringList.Create;
-
-  lStringListLine := TStringList.Create;
-  try
-    lStringListFile.LoadFromFile(Edit1.Text);
-
-    FDQuery1.Params.ArraySize := lStringListFile.Count;
-
-    lStringListLine.StrictDelimiter := True;
-    lStringListLine.Delimiter := ';';
-
-    for lCounter := 0 to Pred(lStringListFile.Count) do
-    begin
-      lStringListLine.DelimitedText := lStringListFile[lCounter];
-
-      FDQuery1.ParamByName('ID').AsIntegers[lCounter] := StrToIntDef(lStringListLine[0], 0);
-      FDQuery1.ParamByName('NOME').AsStrings[lCounter] := lStringListLine[1];
-      FDQuery1.ParamByName('CIDADE').AsStrings[lCounter] := lStringListLine[2];
-      FDQuery1.ParamByName('EMAIL').AsStrings[lCounter] := lStringListLine[3];
-      FDQuery1.ParamByName('DATANASC').AsDates[lCounter] := StrToDateDef(lStringListLine[4], Date);
-      FDQuery1.ParamByName('PROFISSAO').AsStrings[lCounter] := lStringListLine[5];
-      FDQuery1.ParamByName('CARTAO').AsStrings[lCounter] := lStringListLine[6];
-    end;
-
-    FDQuery1.Execute(lStringListFile.Count, 0);
-  finally
-    lStringListLine.Free;
-    lStringListFile.Free;
+  if not FileExists(edtCaminhoDoArquivo.Text) then
+  begin
+    Application.MessageBox('O arquivo informado não existe.', 'Importação Array DML',MB_OK + MB_ICONINFORMATION);
+    exit;
   end;
 
-  lTempo.Stop;
+  if fdqConsulta.Active then
+    fdqConsulta.Close;
 
-  ShowMessage('Time elapsed: ' + IntToStr(lTempo.ElapsedMilliseconds));
+  if fdqImportacao.Active then
+    fdqImportacao.Close;
+
+  lTempo := TStopwatch.StartNew;
+
+  lListaDosRegistros := TStringList.Create;
+
+  lListaDosValores := TStringList.Create;
+  try
+    lListaDosRegistros.LoadFromFile(edtCaminhoDoArquivo.Text);
+
+    fdqImportacao.Params.ArraySize := lListaDosRegistros.Count;
+
+    lListaDosValores.StrictDelimiter := True;
+    lListaDosValores.Delimiter := ';';
+
+    for lLinha := 0 to Pred(lListaDosRegistros.Count) do
+    begin
+      lListaDosValores.DelimitedText := lListaDosRegistros[lLinha];
+
+      fdqImportacao.ParamByName('ID').AsIntegers[lLinha]       := StrToIntDef(lListaDosValores[0], 0);
+      fdqImportacao.ParamByName('NOME').AsStrings[lLinha]      := lListaDosValores[1];
+      fdqImportacao.ParamByName('CIDADE').AsStrings[lLinha]    := lListaDosValores[2];
+      fdqImportacao.ParamByName('EMAIL').AsStrings[lLinha]     := lListaDosValores[3];
+      fdqImportacao.ParamByName('DATANASC').AsDates[lLinha]    := StrToDateDef(lListaDosValores[4], Date);
+      fdqImportacao.ParamByName('PROFISSAO').AsStrings[lLinha] := lListaDosValores[5];
+      fdqImportacao.ParamByName('CARTAO').AsStrings[lLinha]    := lListaDosValores[6];
+    end;
+
+    fdqImportacao.Execute(lListaDosRegistros.Count, 0);
+  finally
+    fdqConsulta.Open();
+
+    lListaDosValores.Free;
+    lListaDosRegistros.Free;
+
+    lTempo.Stop;
+
+    ShowMessage('Tempo decorrido em milisegundos: ' + IntToStr(lTempo.ElapsedMilliseconds));
+  end;
 end;
 
 end.
