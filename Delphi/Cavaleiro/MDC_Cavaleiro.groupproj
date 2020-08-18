@@ -6,7 +6,7 @@
         <Projects Include="20 - Array DML\Array_DML.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="18 - Lembrestes\Lembrestes.dproj">
+        <Projects Include="18 - Lembrestes\Lembretes.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -26,23 +26,23 @@
     <Target Name="Array_DML:Make">
         <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
     </Target>
-    <Target Name="Lembrestes">
-        <MSBuild Projects="18 - Lembrestes\Lembrestes.dproj"/>
+    <Target Name="Lembretes">
+        <MSBuild Projects="18 - Lembrestes\Lembretes.dproj"/>
     </Target>
-    <Target Name="Lembrestes:Clean">
-        <MSBuild Projects="18 - Lembrestes\Lembrestes.dproj" Targets="Clean"/>
+    <Target Name="Lembretes:Clean">
+        <MSBuild Projects="18 - Lembrestes\Lembretes.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="Lembrestes:Make">
-        <MSBuild Projects="18 - Lembrestes\Lembrestes.dproj" Targets="Make"/>
+    <Target Name="Lembretes:Make">
+        <MSBuild Projects="18 - Lembrestes\Lembretes.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="Array_DML;Lembrestes"/>
+        <CallTarget Targets="Array_DML;Lembretes"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Array_DML:Clean;Lembrestes:Clean"/>
+        <CallTarget Targets="Array_DML:Clean;Lembretes:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Array_DML:Make;Lembrestes:Make"/>
+        <CallTarget Targets="Array_DML:Make;Lembretes:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
