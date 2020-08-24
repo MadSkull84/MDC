@@ -3,10 +3,13 @@
         <ProjectGuid>{52A50D98-4EF4-454E-8D8B-7D671321100C}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
+        <Projects Include="18 - Lembrestes\Lembretes.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="20 - Array DML\Array_DML.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="18 - Lembrestes\Lembretes.dproj">
+        <Projects Include="01 - MRC\MRC.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -17,15 +20,6 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="Array_DML">
-        <MSBuild Projects="20 - Array DML\Array_DML.dproj"/>
-    </Target>
-    <Target Name="Array_DML:Clean">
-        <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Array_DML:Make">
-        <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Lembretes">
         <MSBuild Projects="18 - Lembrestes\Lembretes.dproj"/>
     </Target>
@@ -35,14 +29,32 @@
     <Target Name="Lembretes:Make">
         <MSBuild Projects="18 - Lembrestes\Lembretes.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Array_DML">
+        <MSBuild Projects="20 - Array DML\Array_DML.dproj"/>
+    </Target>
+    <Target Name="Array_DML:Clean">
+        <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Array_DML:Make">
+        <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="MRC">
+        <MSBuild Projects="01 - MRC\MRC.dproj"/>
+    </Target>
+    <Target Name="MRC:Clean">
+        <MSBuild Projects="01 - MRC\MRC.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="MRC:Make">
+        <MSBuild Projects="01 - MRC\MRC.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Array_DML;Lembretes"/>
+        <CallTarget Targets="Lembretes;Array_DML;MRC"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Array_DML:Clean;Lembretes:Clean"/>
+        <CallTarget Targets="Lembretes:Clean;Array_DML:Clean;MRC:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Array_DML:Make;Lembretes:Make"/>
+        <CallTarget Targets="Lembretes:Make;Array_DML:Make;MRC:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
