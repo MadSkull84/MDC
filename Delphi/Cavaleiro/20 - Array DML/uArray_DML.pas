@@ -13,7 +13,7 @@ uses
   FireDAC.Comp.DataSet, System.Diagnostics;
 
 type
-  TForm1 = class(TForm)
+  TfrmArray_DML = class(TForm)
     FDConnection: TFDConnection;
     lblCaminhoDoArquivo: TLabel;
     edtCaminhoDoArquivo: TEdit;
@@ -41,20 +41,20 @@ type
   end;
 
 var
-  Form1: TForm1;
+  frmArray_DML: TfrmArray_DML;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm1.btnSelecionarArquivoClick(Sender: TObject);
+procedure TfrmArray_DML.btnSelecionarArquivoClick(Sender: TObject);
 begin
   OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
   if OpenDialog1.Execute() then
     edtCaminhoDoArquivo.Text := OpenDialog1.FileName;
 end;
 
-procedure TForm1.btnImportarClick(Sender: TObject);
+procedure TfrmArray_DML.btnImportarClick(Sender: TObject);
 var
   lListaDosRegistros: TStringList;
   lListaDosValores: TStringList;

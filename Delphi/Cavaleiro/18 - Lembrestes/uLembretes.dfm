@@ -59,6 +59,7 @@ object frmLembretes: TfrmLembretes
     Height = 21
     Date = 44061.000000000000000000
     Format = 'dd/MM/yyyy'
+    Time = 0.786998877316364100
     TabOrder = 0
   end
   object edtLembrete: TEdit
@@ -84,18 +85,25 @@ object frmLembretes: TfrmLembretes
     Columns = <
       item
         Expanded = False
-        FieldName = 'Data'
+        FieldName = 'DATA'
+        Width = 80
         Visible = True
       end
       item
         Expanded = False
-        FieldName = 'Hora'
+        FieldName = 'HORA'
+        Width = 80
         Visible = True
       end
       item
         Expanded = False
-        FieldName = 'Lembrete'
-        Width = 350
+        FieldName = 'LEMBRETE'
+        Width = 250
+        Visible = True
+      end
+      item
+        Expanded = False
+        FieldName = 'EXECUTADO'
         Visible = True
       end>
   end
@@ -161,15 +169,22 @@ object frmLembretes: TfrmLembretes
     StoreDefs = True
     Left = 104
     Top = 80
-    object cdsLembretesData: TDateField
-      FieldName = 'Data'
+    object cdsLembretesDATA: TStringField
+      DisplayLabel = 'Data'
+      FieldName = 'DATA'
     end
-    object cdsLembretesHora: TTimeField
-      FieldName = 'Hora'
+    object cdsLembretesHORA: TStringField
+      DisplayLabel = 'Hora'
+      FieldName = 'HORA'
     end
-    object cdsLembretesLembrete: TStringField
-      FieldName = 'Lembrete'
+    object cdsLembretesLEMBRETE: TStringField
+      DisplayLabel = 'Lembrete'
+      FieldName = 'LEMBRETE'
       Size = 250
+    end
+    object cdsLembretesEXECUTADO: TBooleanField
+      DisplayLabel = 'Executado'
+      FieldName = 'EXECUTADO'
     end
   end
   object dscLembretes: TDataSource
@@ -179,6 +194,7 @@ object frmLembretes: TfrmLembretes
     Top = 120
   end
   object NotificationCenter: TNotificationCenter
+    OnReceiveLocalNotification = NotificationCenterReceiveLocalNotification
     Left = 432
     Top = 8
   end

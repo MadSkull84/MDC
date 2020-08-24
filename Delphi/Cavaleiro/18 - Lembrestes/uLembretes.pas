@@ -21,9 +21,6 @@ type
     lblLembrete: TLabel;
     edtLembrete: TEdit;
     cdsLembretes: TClientDataSet;
-    cdsLembretesData: TDateField;
-    cdsLembretesHora: TTimeField;
-    cdsLembretesLembrete: TStringField;
     btnAdicionar: TSpeedButton;
     DBGrid1: TDBGrid;
     lblDados: TLabel;
@@ -33,6 +30,10 @@ type
     Timer: TTimer;
     lblHoraDoLembrete: TLabel;
     edtHora: TDateTimePicker;
+    cdsLembretesDATA: TStringField;
+    cdsLembretesHORA: TStringField;
+    cdsLembretesLEMBRETE: TStringField;
+    cdsLembretesEXECUTADO: TBooleanField;
     procedure ApplicationEventsMinimize(Sender: TObject);
     procedure TrayIconDblClick(Sender: TObject);
     procedure Abrir1Click(Sender: TObject);
@@ -41,9 +42,12 @@ type
     procedure btnAdicionarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure TimerTimer(Sender: TObject);
+    procedure NotificationCenterReceiveLocalNotification(Sender: TObject;
+      ANotification: TNotification);
   private
     { Private declarations }
     procedure AbrirAplicacao;
+    procedure GerarLembrete;
   public
     { Public declarations }
   end;
@@ -80,9 +84,10 @@ end;
 procedure TfrmLembretes.btnAdicionarClick(Sender: TObject);
 begin
   cdsLembretes.Insert;
-  cdsLembretesData.AsDateTime := edtData.Date;
-  cdsLembretesHora.AsDateTime := edtHora.Time;
-  cdsLembretesLembrete.AsString := edtLembrete.Text;
+  cdsLembretesDATA.AsString := FormatDateTime('DD/MM/YYY', edtData.Date);
+  cdsLembretesHORA.AsString := FormatDateTime('HH:MM', edtHora.Time);
+  cdsLembretesLEMBRETE.AsString := edtLembrete.Text;
+  cdsLembretesEXECUTADO.AsBoolean := false;
   cdsLembretes.Post;
 end;
 
@@ -106,33 +111,50 @@ begin
   edtHora.Time := Time;
 end;
 
-procedure TfrmLembretes.TimerTimer(Sender: TObject);
+procedure TfrmLembretes.GerarLembrete;
 var
   lNotificacao: TNotification;
-  lHora: word;
-  lMinuto: word;
-  lSegundo: word;
-  lMileSegundo: word;
-  lHoraFormatada: string;
 begin
-  DecodeTime(Time, lHora, lMinuto, lSegundo, lMileSegundo);
-  lHoraFormatada := IntToStr(lHora) + ':' + IntToStr(lMinuto);
-  if not cdsLembretes.Locate('Data;Hora', VarArrayOf([Date, lHoraFormatada]), [loCaseInsensitive]) then
-    Exit;
-
   lNotificacao := NotificationCenter.CreateNotification;
-
-  if not Assigned(lNotificacao) then
-    Exit;
-
   try
+    if not Assigned(lNotificacao) then
+      Exit;
+
     lNotificacao.Name := 'L' + cdsLembretesData.AsString+cdsLembretesHora.AsString;
     lNotificacao.Title := 'Lembrete!';
     lNotificacao.AlertBody := cdsLembretesLembrete.AsString;
     NotificationCenter.PresentNotification(lNotificacao);
   finally
+    cdsLembretes.Edit;
+    cdsLembretesEXECUTADO.AsBoolean := true;
+    cdsLembretes.Post;
     FreeAndNil(lNotificacao);
   end;
+end;
+
+procedure TfrmLembretes.NotificationCenterReceiveLocalNotification(
+  Sender: TObject; ANotification: TNotification);
+begin
+  AbrirAplicacao;
+end;
+
+procedure TfrmLembretes.TimerTimer(Sender: TObject);
+begin
+  cdsLembretes.DisableControls;
+  cdsLembretes.Filter := 'DATA = ' + QuotedStr(FormatDateTime('DD/MM/YYY', Date)) +
+                         ' and HORA = ' + QuotedStr(FormatDateTime('HH:MM', Time)) +
+                         ' and EXECUTADO = ' + BoolToStr(false);
+  cdsLembretes.Filtered := true;
+
+  while not cdsLembretes.Eof do
+  begin
+    GerarLembrete;
+    cdsLembretes.Next;
+  end;
+
+  cdsLembretes.Filter := EmptyStr;
+  cdsLembretes.Filtered := false;
+  cdsLembretes.EnableControls;
 end;
 
 procedure TfrmLembretes.TrayIconDblClick(Sender: TObject);

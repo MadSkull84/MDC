@@ -1,4 +1,4 @@
-object Form1: TForm1
+object frmArray_DML: TfrmArray_DML
   Left = 0
   Top = 0
   Caption = 'Importa'#231#227'o Array DML'
