@@ -32,6 +32,7 @@ begin
   try
     loRepositorio.SalvarDadosNuvem;
     loRepositorio.SalvarDadosArquivo;
+    Readln;
   finally
     FreeAndNil(loRepositorio);
   end;
