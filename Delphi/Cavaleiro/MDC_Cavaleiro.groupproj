@@ -6,6 +6,9 @@
         <Projects Include="01 - MRC\MRC.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="02 - Registro\Registro.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="18 - Lembrestes\Lembretes.dproj">
             <Dependencies/>
         </Projects>
@@ -29,6 +32,15 @@
     <Target Name="MRC:Make">
         <MSBuild Projects="01 - MRC\MRC.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Registro">
+        <MSBuild Projects="02 - Registro\Registro.dproj"/>
+    </Target>
+    <Target Name="Registro:Clean">
+        <MSBuild Projects="02 - Registro\Registro.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Registro:Make">
+        <MSBuild Projects="02 - Registro\Registro.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Lembretes">
         <MSBuild Projects="18 - Lembrestes\Lembretes.dproj"/>
     </Target>
@@ -48,13 +60,13 @@
         <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="MRC;Lembretes;Array_DML"/>
+        <CallTarget Targets="MRC;Registro;Lembretes;Array_DML"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="MRC:Clean;Lembretes:Clean;Array_DML:Clean"/>
+        <CallTarget Targets="MRC:Clean;Registro:Clean;Lembretes:Clean;Array_DML:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="MRC:Make;Lembretes:Make;Array_DML:Make"/>
+        <CallTarget Targets="MRC:Make;Registro:Make;Lembretes:Make;Array_DML:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
