@@ -1,3 +1,11 @@
+{
+02 - Desenvolva uma aplicação VCL capaz de listar os programas instalados no
+     computador através da leitura do registro do Windows.
+     Para isso, utilize a classe TRegistry e apresente, em uma TDBGrid,
+     o nome do programa, versão e a empresa.
+
+Autor: Eder Correia Lira
+}
 unit uRegistro;
 
 interface
