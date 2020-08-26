@@ -9,6 +9,9 @@
         <Projects Include="02 - Registro\Registro.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="03 - ZipFile\ArquivoZip.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="18 - Lembrestes\Lembretes.dproj">
             <Dependencies/>
         </Projects>
@@ -41,6 +44,15 @@
     <Target Name="Registro:Make">
         <MSBuild Projects="02 - Registro\Registro.dproj" Targets="Make"/>
     </Target>
+    <Target Name="ArquivoZip">
+        <MSBuild Projects="03 - ZipFile\ArquivoZip.dproj"/>
+    </Target>
+    <Target Name="ArquivoZip:Clean">
+        <MSBuild Projects="03 - ZipFile\ArquivoZip.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ArquivoZip:Make">
+        <MSBuild Projects="03 - ZipFile\ArquivoZip.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Lembretes">
         <MSBuild Projects="18 - Lembrestes\Lembretes.dproj"/>
     </Target>
@@ -60,13 +72,13 @@
         <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="MRC;Registro;Lembretes;Array_DML"/>
+        <CallTarget Targets="MRC;Registro;ArquivoZip;Lembretes;Array_DML"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="MRC:Clean;Registro:Clean;Lembretes:Clean;Array_DML:Clean"/>
+        <CallTarget Targets="MRC:Clean;Registro:Clean;ArquivoZip:Clean;Lembretes:Clean;Array_DML:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="MRC:Make;Registro:Make;Lembretes:Make;Array_DML:Make"/>
+        <CallTarget Targets="MRC:Make;Registro:Make;ArquivoZip:Make;Lembretes:Make;Array_DML:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
