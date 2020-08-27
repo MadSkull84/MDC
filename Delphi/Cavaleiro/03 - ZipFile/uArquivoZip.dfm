@@ -2,8 +2,8 @@ object frmArquivoZip: TfrmArquivoZip
   Left = 0
   Top = 0
   Caption = 'Compactar Arquivos'
-  ClientHeight = 393
-  ClientWidth = 635
+  ClientHeight = 385
+  ClientWidth = 633
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,7 +17,7 @@ object frmArquivoZip: TfrmArquivoZip
   TextHeight = 13
   object btnSelecionarArquivos: TSpeedButton
     Left = 8
-    Top = 4
+    Top = 8
     Width = 619
     Height = 22
     Caption = 'Selecionar arquivos ...'
@@ -25,14 +25,14 @@ object frmArquivoZip: TfrmArquivoZip
   end
   object lblArquivoSaida: TLabel
     Left = 8
-    Top = 298
+    Top = 296
     Width = 206
     Height = 13
     Caption = 'Nome do arquivo compactado a ser gerado'
   end
   object btnArquivoSaida: TSpeedButton
     Left = 600
-    Top = 311
+    Top = 312
     Width = 27
     Height = 22
     Caption = '...'
@@ -40,7 +40,7 @@ object frmArquivoZip: TfrmArquivoZip
   end
   object btnGerarArquivo: TSpeedButton
     Left = 8
-    Top = 339
+    Top = 336
     Width = 619
     Height = 22
     Caption = 'Gerar Arquivo'
@@ -49,7 +49,7 @@ object frmArquivoZip: TfrmArquivoZip
   object dbgArquivos: TDBGrid
     Left = 8
     Top = 32
-    Width = 619
+    Width = 586
     Height = 260
     DataSource = dscArquivos
     ReadOnly = True
@@ -69,7 +69,7 @@ object frmArquivoZip: TfrmArquivoZip
       item
         Expanded = False
         FieldName = 'CAMINHO'
-        Width = 325
+        Width = 290
         Visible = True
       end
       item
@@ -89,10 +89,21 @@ object frmArquivoZip: TfrmArquivoZip
   end
   object pgbProgresso: TProgressBar
     Left = 8
-    Top = 367
+    Top = 360
     Width = 619
     Height = 17
+    Smooth = True
     TabOrder = 2
+  end
+  object dbnArquivos: TDBNavigator
+    Left = 600
+    Top = 32
+    Width = 25
+    Height = 110
+    DataSource = dscArquivos
+    VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast, nbDelete]
+    Kind = dbnVertical
+    TabOrder = 3
   end
   object OpenDialog: TOpenDialog
     Options = [ofHideReadOnly, ofAllowMultiSelect, ofEnableSizing]

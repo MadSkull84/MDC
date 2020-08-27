@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.StdCtrls, Vcl.ComCtrls,
-  Data.DB, Vcl.Grids, Vcl.DBGrids, Datasnap.DBClient, System.Math, System.Zip;
+  Data.DB, Vcl.Grids, Vcl.DBGrids, Datasnap.DBClient, System.Math, System.Zip,
+  Vcl.ExtCtrls, Vcl.DBCtrls;
 
 
 const
@@ -28,18 +29,24 @@ type
     btnGerarArquivo: TSpeedButton;
     cdsArquivosCAMINHOCOMPLETO: TStringField;
     pgbProgresso: TProgressBar;
+    dbnArquivos: TDBNavigator;
     procedure btnSelecionarArquivosClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnArquivoSaidaClick(Sender: TObject);
     procedure btnGerarArquivoClick(Sender: TObject);
   private
     { Private declarations }
-    FBCampactar: integer;
-    FBProcessados: integer;
-    function ObterTamanhoArquivo(const NomeArquivo: string): integer;
+    FBCampactar: int64;
+    FBProcessados: int64;
+    function ObterTamanhoArquivo(const NomeArquivo: string): int64;
     function ValidarExtensao(const psExtensao: string): boolean;
+    function ValidarArquivosSelecionados: boolean;
+    function ValidarArquivoSaida: boolean;
+    procedure ObterTamanhoArquivos;
     procedure EventoOnProgress(Sender: TObject; FileName: string;
       Header: TZipHeader; Position: Int64);
+    procedure CompactarArquivos;
+    procedure AdicionarArquivos(const psListaArquivos: TStrings);
   public
     { Public declarations }
   end;
@@ -51,7 +58,7 @@ implementation
 
 {$R *.dfm}
 
-function TfrmArquivoZip.ObterTamanhoArquivo(const NomeArquivo: string): integer;
+function TfrmArquivoZip.ObterTamanhoArquivo(const NomeArquivo: string): int64;
 var
   lStreamArquivo: TFileStream;
 begin
@@ -63,6 +70,32 @@ begin
   end;
 end;
 
+procedure TfrmArquivoZip.ObterTamanhoArquivos;
+begin
+  FBCampactar := ZeroValue;
+  cdsArquivos.DisableControls;
+  try
+    cdsArquivos.First;
+    while not cdsArquivos.Eof do
+    begin
+      FBCampactar := FBCampactar + ObterTamanhoArquivo(cdsArquivosCAMINHOCOMPLETO.AsString);
+      cdsArquivos.Next;
+    end;
+  finally
+    cdsArquivos.EnableControls;
+  end;
+end;
+
+function TfrmArquivoZip.ValidarArquivoSaida: boolean;
+begin
+  result := (Trim(edtNomeArquivoSaida.Text) <> EmptyStr) and
+            (UpperCase(ExtractFileExt(edtNomeArquivoSaida.Text)) = '.ZIP');
+end;
+
+function TfrmArquivoZip.ValidarArquivosSelecionados: boolean;
+begin
+  result := cdsArquivos.RecordCount > ZeroValue;
+end;
 
 function TfrmArquivoZip.ValidarExtensao(const psExtensao: string): boolean;
 var
@@ -84,9 +117,39 @@ procedure TfrmArquivoZip.EventoOnProgress(Sender: TObject; FileName: string;
 var
   lnPorcentagemGeral: real;
 begin
-  lnPorcentagemGeral := (FBProcessados + Position) / (FBCampactar * 100);
-  pgbProgresso.Position := Trunc(lnPorcentagemGeral);
   Application.ProcessMessages;
+  pgbProgresso.Position := Trunc((FBProcessados + Position) / (FBCampactar * 100));
+end;
+
+procedure TfrmArquivoZip.AdicionarArquivos(const psListaArquivos: TStrings);
+var
+  lArquivo: string;
+  lArquivosInvalidos: TStringList;
+begin
+  lArquivosInvalidos := TStringList.Create;
+  try
+    cdsArquivos.EmptyDataSet;
+
+    for lArquivo in psListaArquivos do
+    begin
+      if (not ValidarExtensao(UpperCase(ExtractFileExt(lArquivo)))) then
+      begin
+        lArquivosInvalidos.Add(ExtractFileName(lArquivo));
+        Continue;
+      end;
+
+      cdsArquivos.Insert;
+      cdsArquivosARQUIVO.AsString := ExtractFileName(lArquivo);
+      cdsArquivosCAMINHO.AsString := ExtractFilePath(lArquivo);
+      cdsArquivosEXTENSAO.AsString := ExtractFileExt(lArquivo);
+      cdsArquivosCAMINHOCOMPLETO.AsString := lArquivo;
+      cdsArquivos.Post;
+    end;
+  finally
+    if lArquivosInvalidos.Count > ZeroValue then
+      Application.MessageBox(PWideChar('Os arquivos abaixo não podem ser incluídos no arquivo compactado a ser gerado!' + #13#10 + lArquivosInvalidos.Text), 'Atenção', MB_ICONINFORMATION + MB_OK);
+    FreeAndNil(lArquivosInvalidos);
+  end;
 end;
 
 procedure TfrmArquivoZip.btnArquivoSaidaClick(Sender: TObject);
@@ -96,24 +159,43 @@ begin
 end;
 
 procedure TfrmArquivoZip.btnGerarArquivoClick(Sender: TObject);
+begin
+  if not ValidarArquivoSaida then
+  begin
+    Application.MessageBox('O arquivo de saída informado não é valido.', 'Atenção', MB_ICONWARNING + MB_OK);
+    Exit;
+  end;
+
+  if not ValidarArquivosSelecionados then
+  begin
+    Application.MessageBox('Não existem arquivos selecionados.', 'Atenção', MB_ICONWARNING + MB_OK);
+    Exit;
+  end;
+
+  CompactarArquivos;
+end;
+
+procedure TfrmArquivoZip.btnSelecionarArquivosClick(Sender: TObject);
+begin
+  if OpenDialog.Execute() then
+     AdicionarArquivos(OpenDialog.Files);
+end;
+
+procedure TfrmArquivoZip.CompactarArquivos;
 var
   lZipFile: TZipFile;
 begin
   lZipFile := TZipFile.Create;
   try
-    FBProcessados := ZeroValue;
-    FBCampactar   := ZeroValue;
+    pgbProgresso.Position := ZeroValue;
+    FBProcessados         := ZeroValue;
+
+    ObterTamanhoArquivos;
 
     lZipFile.OnProgress := EventoOnProgress;
     lZipFile.Open(edtNomeArquivoSaida.Text, zmWrite);
 
-    cdsArquivos.First;
-    while not cdsArquivos.Eof do
-    begin
-      FBCampactar := ObterTamanhoArquivo(cdsArquivosCAMINHOCOMPLETO.AsString);
-      cdsArquivos.Next;
-    end;
-
+    cdsArquivos.DisableControls;
     cdsArquivos.First;
     while not cdsArquivos.Eof do
     begin
@@ -127,42 +209,8 @@ begin
 
     Application.MessageBox('Compactação concluída!', 'Informação', MB_ICONINFORMATION + MB_OK);
   finally
-
+    cdsArquivos.EnableControls;
     FreeAndNil(lZipFile);
-  end;
-end;
-
-procedure TfrmArquivoZip.btnSelecionarArquivosClick(Sender: TObject);
-var
-  lArquivo: string;
-  lArquivosInvalidos: TStringList;
-begin
-  lArquivosInvalidos := TStringList.Create;
-  try
-    cdsArquivos.EmptyDataSet;
-    if OpenDialog.Execute() then
-    begin
-      for lArquivo in OpenDialog.Files do
-      begin
-        if (not ValidarExtensao(UpperCase(ExtractFileExt(lArquivo)))) then
-        begin
-          lArquivosInvalidos.Add(ExtractFileName(lArquivo));
-          Continue;
-        end;
-
-        cdsArquivos.Insert;
-        cdsArquivosARQUIVO.AsString := ExtractFileName(lArquivo);
-        cdsArquivosCAMINHO.AsString := ExtractFilePath(lArquivo);
-        cdsArquivosEXTENSAO.AsString := ExtractFileExt(lArquivo);
-        cdsArquivosCAMINHOCOMPLETO.AsString := lArquivo;
-        cdsArquivos.Post;
-      end;
-    end;
-  finally
-    if lArquivosInvalidos.Count > ZeroValue then
-
-    Application.MessageBox(PWideChar('Os arquivos abaixo não podem ser incluídos no arquivo compactado a ser gerado!' + #13#10 + lArquivosInvalidos.Text), 'Atenção', MB_ICONINFORMATION + MB_OK);
-    FreeAndNil(lArquivosInvalidos);
   end;
 end;
 
