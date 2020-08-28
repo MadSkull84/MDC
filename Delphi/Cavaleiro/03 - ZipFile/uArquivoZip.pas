@@ -114,11 +114,9 @@ end;
 
 procedure TfrmArquivoZip.EventoOnProgress(Sender: TObject; FileName: string;
   Header: TZipHeader; Position: Int64);
-var
-  lnPorcentagemGeral: real;
 begin
   Application.ProcessMessages;
-  pgbProgresso.Position := Trunc((FBProcessados + Position) / (FBCampactar * 100));
+  pgbProgresso.Position := Trunc((FBProcessados + Position) / FBCampactar * 100);
 end;
 
 procedure TfrmArquivoZip.AdicionarArquivos(const psListaArquivos: TStrings);
