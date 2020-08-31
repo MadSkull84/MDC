@@ -15,6 +15,9 @@
         <Projects Include="04 - Array Task\Array_Task.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="05 - Primos\Primos.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="18 - Lembrestes\Lembretes.dproj">
             <Dependencies/>
         </Projects>
@@ -65,6 +68,15 @@
     <Target Name="Array_Task:Make">
         <MSBuild Projects="04 - Array Task\Array_Task.dproj" Targets="Make"/>
     </Target>
+    <Target Name="Primos">
+        <MSBuild Projects="05 - Primos\Primos.dproj"/>
+    </Target>
+    <Target Name="Primos:Clean">
+        <MSBuild Projects="05 - Primos\Primos.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Primos:Make">
+        <MSBuild Projects="05 - Primos\Primos.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Lembretes">
         <MSBuild Projects="18 - Lembrestes\Lembretes.dproj"/>
     </Target>
@@ -84,13 +96,13 @@
         <MSBuild Projects="20 - Array DML\Array_DML.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="MRC;Registro;ArquivoZip;Array_Task;Lembretes;Array_DML"/>
+        <CallTarget Targets="MRC;Registro;ArquivoZip;Array_Task;Primos;Lembretes;Array_DML"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="MRC:Clean;Registro:Clean;ArquivoZip:Clean;Array_Task:Clean;Lembretes:Clean;Array_DML:Clean"/>
+        <CallTarget Targets="MRC:Clean;Registro:Clean;ArquivoZip:Clean;Array_Task:Clean;Primos:Clean;Lembretes:Clean;Array_DML:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="MRC:Make;Registro:Make;ArquivoZip:Make;Array_Task:Make;Lembretes:Make;Array_DML:Make"/>
+        <CallTarget Targets="MRC:Make;Registro:Make;ArquivoZip:Make;Array_Task:Make;Primos:Make;Lembretes:Make;Array_DML:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
