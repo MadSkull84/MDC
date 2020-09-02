@@ -99,8 +99,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="uBaixador.pas">
-            <Form>Form1</Form>
-            <FormType>dfm</FormType>
+            <Form>frmBaixador</Form>
         </DCCReference>
         <DCCReference Include="uThreadBaixador.pas"/>
         <BuildConfiguration Include="Release">

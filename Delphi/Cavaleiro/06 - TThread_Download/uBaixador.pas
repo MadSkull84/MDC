@@ -9,12 +9,13 @@ uses
   uThreadBaixador;
 
 type
-  TForm1 = class(TForm)
-    IdHTTP1: TIdHTTP;
-    Edit1: TEdit;
-    SpeedButton1: TSpeedButton;
-    ProgressBar1: TProgressBar;
-    procedure SpeedButton1Click(Sender: TObject);
+  TfrmBaixador = class(TForm)
+    IdHTTP: TIdHTTP;
+    edtURL: TEdit;
+    btnBaixar: TSpeedButton;
+    pgbProgresso: TProgressBar;
+    Label1: TLabel;
+    procedure btnBaixarClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -22,18 +23,15 @@ type
   end;
 
 var
-  Form1: TForm1;
+  frmBaixador: TfrmBaixador;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm1.SpeedButton1Click(Sender: TObject);
-var
-  ltBaixador: TThreadBaixador;
+procedure TfrmBaixador.btnBaixarClick(Sender: TObject);
 begin
-  ltBaixador := TThreadBaixador.Create(Edit1.Text, ProgressBar1, IdHTTP1);
-  ltBaixador.Start;
+  TThreadBaixador.Create(edtURL, btnBaixar, pgbProgresso, IdHTTP);
 end;
 
 end.

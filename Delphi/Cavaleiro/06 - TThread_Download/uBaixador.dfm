@@ -1,9 +1,9 @@
-object Form1: TForm1
+object frmBaixador: TfrmBaixador
   Left = 0
   Top = 0
-  Caption = 'Form1'
-  ClientHeight = 300
-  ClientWidth = 635
+  Caption = 'Baixador'
+  ClientHeight = 97
+  ClientWidth = 417
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,32 +11,42 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesktopCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object SpeedButton1: TSpeedButton
-    Left = 135
-    Top = 8
-    Width = 23
+  object btnBaixar: TSpeedButton
+    Left = 8
+    Top = 48
+    Width = 401
     Height = 22
-    OnClick = SpeedButton1Click
+    Caption = 'Baixar'
+    Flat = True
+    OnClick = btnBaixarClick
   end
-  object Edit1: TEdit
+  object Label1: TLabel
     Left = 8
     Top = 8
-    Width = 121
+    Width = 93
+    Height = 13
+    Caption = 'URL para download'
+  end
+  object edtURL: TEdit
+    Left = 8
+    Top = 24
+    Width = 401
     Height = 21
     TabOrder = 0
     Text = 'http://www.telmaxbr.net.br/download/dwl/100MEGA.zip'
   end
-  object ProgressBar1: TProgressBar
+  object pgbProgresso: TProgressBar
     Left = 8
-    Top = 36
-    Width = 150
+    Top = 72
+    Width = 401
     Height = 17
     Smooth = True
     TabOrder = 1
   end
-  object IdHTTP1: TIdHTTP
+  object IdHTTP: TIdHTTP
     AllowCookies = True
     ProxyParams.BasicAuthentication = False
     ProxyParams.ProxyPort = 0
@@ -50,7 +60,7 @@ object Form1: TForm1
     Request.Ranges.Units = 'bytes'
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
-    Left = 168
+    Left = 376
     Top = 8
   end
 end
