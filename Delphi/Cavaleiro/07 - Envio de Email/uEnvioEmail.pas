@@ -30,14 +30,25 @@ type
     lblUsuario: TLabel;
     lblSenha: TLabel;
     lvlPorta: TLabel;
-    IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL;
-    IdSMTP: TIdSMTP;
-    IdMessage: TIdMessage;
     lblDestinatario: TLabel;
     edtDestinario: TEdit;
+    btnArquivos: TSpeedButton;
+    OpenDialog: TOpenDialog;
+    cbbMetodo: TComboBox;
+    cbbModo: TComboBox;
+    lblMetodo: TLabel;
+    lblModo: TLabel;
     procedure btnEnviarClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnArquivosClick(Sender: TObject);
   private
-    procedure AplicarConfiguracoes;
+    procedure AplicarConfiguracoesIdSMTP(poIdSMTP: TIdSMTP);
+    procedure AplicarConfiguracoesIdMessage(poIdMessage: TIdMessage);
+    procedure AplicarConfiguracoesIdSSLIOHandler(
+      poIdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL);
+    procedure GerarIdText(poIdText: TIdText);
+    procedure AdicionarAnexos(poIdMessage: TIdMessage);
+    procedure EnviarEmail;
     { Private declarations }
   public
     { Public declarations }
@@ -50,62 +61,119 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmEnvioEmail.AplicarConfiguracoes;
+procedure TfrmEnvioEmail.AplicarConfiguracoesIdSMTP(poIdSMTP: TIdSMTP);
 begin
-  IdSMTP.Port     := StrToIntDef(edtPorta.Text, 0);
-  IdSMTP.Host     := edtSMTP.Text;
-  IdSMTP.Username := edtUsuario.Text;
-  IdSMTP.Password := edtSenha.Text;
+  poIdSMTP.AuthType  := satDefault;
+  poIdSMTP.UseTLS    := utUseImplicitTLS;
+  poIdSMTP.Port      := StrToIntDef(edtPorta.Text, 0);
+  poIdSMTP.Host      := edtSMTP.Text;
+  poIdSMTP.Username  := edtUsuario.Text;
+  poIdSMTP.Password  := edtSenha.Text;
+end;
+
+procedure TfrmEnvioEmail.AplicarConfiguracoesIdSSLIOHandler(
+  poIdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL);
+begin
+  poIdSSLIOHandlerSocket.SSLOptions.Method := TIdSSLVersion(cbbMetodo.ItemIndex);
+  poIdSSLIOHandlerSocket.SSLOptions.Mode   := TIdSSLMode(cbbModo.ItemIndex);
+end;
+
+procedure TfrmEnvioEmail.AplicarConfiguracoesIdMessage(poIdMessage: TIdMessage);
+begin
+  poIdMessage.From.Address           := edtUsuario.Text;
+  poIdMessage.From.Name              := edtUsuario.Text;
+  poIdMessage.ReplyTo.EMailAddresses := poIdMessage.From.Address;
+  poIdMessage.Recipients.Add.Text    := edtDestinario.Text;
+  poIdMessage.Subject                := edtAssunto.Text;
+  poIdMessage.Encoding               := meMIME;
+end;
+
+procedure TfrmEnvioEmail.GerarIdText(poIdText: TIdText);
+begin
+  poIdText.Body.Add(memMensagem.Text);
+  poIdText.ContentType := 'text/html; charset=iso-8859-1';
+end;
+
+procedure TfrmEnvioEmail.AdicionarAnexos(poIdMessage: TIdMessage);
+var
+  lArquivo: string;
+begin
+  for lArquivo in lbxAnexos.Items do
+    TIdAttachmentFile.Create(poIdMessage.MessageParts, lArquivo);
+end;
+
+procedure TfrmEnvioEmail.btnArquivosClick(Sender: TObject);
+var
+  lArquivo: string;
+begin
+  lbxAnexos.Clear;
+  if not OpenDialog.Execute() then
+    Exit;
+
+  for lArquivo in OpenDialog.Files do
+  begin
+    if FileExists(lArquivo) then
+      lbxAnexos.Items.Add(lArquivo);
+  end;
 end;
 
 procedure TfrmEnvioEmail.btnEnviarClick(Sender: TObject);
-var
- lIdText: TIdText;
 begin
+  TThread.CreateAnonymousThread(procedure begin EnviarEmail end).start();
+end;
+
+procedure TfrmEnvioEmail.EnviarEmail;
+var
+ lIdSSLIOHandlerSocket: TIdSSLIOHandlerSocketOpenSSL;
+ lIdSMTP: TIdSMTP;
+ lIdText: TIdText;
+ lIdMessage: TIdMessage;
+begin
+  lIdSSLIOHandlerSocket := TIdSSLIOHandlerSocketOpenSSL.Create(Self);
+  lIdSMTP               := TIdSMTP.Create(Self);
+  lIdMessage            := TIdMessage.Create(Self);
   try
-    AplicarConfiguracoes;
+    AplicarConfiguracoesIdSSLIOHandler(lIdSSLIOHandlerSocket);
 
-    IdMessage.From.Address := edtUsuario.Text;
-    IdMessage.From.Name := '';
-    IdMessage.ReplyTo.EMailAddresses := IdMessage.From.Address;
-    IdMessage.Recipients.Add.Text := edtDestinario.Text;
-    IdMessage.Subject := edtAssunto.Text;
-    IdMessage.Encoding := meMIME;
+    lIdSMTP.IOHandler := lIdSSLIOHandlerSocket;
+    AplicarConfiguracoesIdSMTP(lIdSMTP);
 
+    AplicarConfiguracoesIdMessage(lIdMessage);
 
-    lIdText := TIdText.Create(IdMessage.MessageParts);
-    lIdText.Body.Add(memMensagem.Text);
-    lIdText.ContentType := 'text/html; charset=iso-8859-1';
+    lIdText := TIdText.Create(lIdMessage.MessageParts);
+    GerarIdText(lIdText);
 
-    //  TIdAttachmentFile.Create(IdMessage.MessageParts, 'c:\anexo.zip');
+    AdicionarAnexos(lIdMessage);
 
     try
-      IdSMTP.Connect;
-      IdSMTP.Authenticate;
+      lIdSMTP.Connect;
+      lIdSMTP.Authenticate;
     except
       on E:Exception do
       begin
-        MessageDlg('Erro na conexão ou autenticação: ' +
-          E.Message, mtWarning, [mbOK], 0);
+        Application.MessageBox('Erro na conexão\autenticação', 'Erro', MB_ICONERROR + MB_OK);
         Exit;
       end;
     end;
 
     try
-      IdSMTP.Send(IdMessage);
-      MessageDlg('Mensagem enviada com sucesso!', mtInformation, [mbOK], 0);
+      lIdSMTP.Send(lIdMessage);
+      Application.MessageBox('E-mail enviado com sucesso!', 'Informação', MB_ICONINFORMATION + MB_OK);
     except
-      On E:Exception do
-      begin
-        MessageDlg('Erro ao enviar a mensagem: ' +
-          E.Message, mtWarning, [mbOK], 0);
-      end;
+      Application.MessageBox('Erro ao enviar o e-mail.', 'Erro', MB_ICONERROR + MB_OK);
     end;
   finally
-    IdSMTP.Disconnect;
+    lIdSMTP.Disconnect;
     UnLoadOpenSSLLibrary;
-    FreeAndNil(IdMessage);
+    FreeAndNil(lIdMessage);
+    FreeAndNil(lIdSSLIOHandlerSocket);
+    FreeAndNil(lIdSMTP);
   end;
+end;
+
+procedure TfrmEnvioEmail.FormCreate(Sender: TObject);
+begin
+  OpenDialog.InitialDir := ExtractFilePath(Application.ExeName);
 end;
 
 end.

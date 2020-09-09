@@ -12,6 +12,7 @@ object frmEnvioEmail: TfrmEnvioEmail
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
@@ -22,10 +23,8 @@ object frmEnvioEmail: TfrmEnvioEmail
     ActivePage = tsFormulario
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 635
     object tsFormulario: TTabSheet
       Caption = 'Formul'#225'rio'
-      ExplicitWidth = 627
       object lblAssunto: TLabel
         Left = 16
         Top = 64
@@ -48,9 +47,9 @@ object frmEnvioEmail: TfrmEnvioEmail
         Caption = 'Anexos'
       end
       object btnEnviar: TSpeedButton
-        Left = 16
+        Left = 504
         Top = 384
-        Width = 593
+        Width = 105
         Height = 22
         Caption = 'Enviar'
         Flat = True
@@ -59,9 +58,18 @@ object frmEnvioEmail: TfrmEnvioEmail
       object lblDestinatario: TLabel
         Left = 16
         Top = 24
-        Width = 58
+        Width = 216
         Height = 13
-        Caption = 'Destinat'#225'rio'
+        Caption = 'Destinat'#225'rio(aceita somente um destinat'#225'rio)'
+      end
+      object btnArquivos: TSpeedButton
+        Left = 16
+        Top = 384
+        Width = 105
+        Height = 22
+        Caption = 'Carregar Arquivos'
+        Flat = True
+        OnClick = btnArquivosClick
       end
       object edtAssunto: TEdit
         Left = 16
@@ -96,7 +104,6 @@ object frmEnvioEmail: TfrmEnvioEmail
     object tsConfiguracoes: TTabSheet
       Caption = 'Configura'#231#245'es'
       ImageIndex = 1
-      ExplicitWidth = 627
       object lblSMTP: TLabel
         Left = 16
         Top = 24
@@ -125,12 +132,27 @@ object frmEnvioEmail: TfrmEnvioEmail
         Height = 13
         Caption = 'Porta'
       end
+      object lblMetodo: TLabel
+        Left = 16
+        Top = 104
+        Width = 36
+        Height = 13
+        Caption = 'M'#233'todo'
+      end
+      object lblModo: TLabel
+        Left = 160
+        Top = 104
+        Width = 26
+        Height = 13
+        Caption = 'Modo'
+      end
       object edtSMTP: TEdit
         Left = 16
         Top = 40
         Width = 409
         Height = 21
         TabOrder = 0
+        Text = 'smtp.gmail.com'
       end
       object edtSenha: TEdit
         Left = 160
@@ -139,6 +161,7 @@ object frmEnvioEmail: TfrmEnvioEmail
         Height = 21
         PasswordChar = '*'
         TabOrder = 2
+        Text = 'mdc2020delphi'
       end
       object edtPorta: TEdit
         Left = 304
@@ -146,6 +169,7 @@ object frmEnvioEmail: TfrmEnvioEmail
         Width = 121
         Height = 21
         TabOrder = 3
+        Text = '465'
       end
       object edtUsuario: TEdit
         Left = 16
@@ -153,42 +177,43 @@ object frmEnvioEmail: TfrmEnvioEmail
         Width = 121
         Height = 21
         TabOrder = 1
+        Text = 'mdc.delphi'
+      end
+      object cbbMetodo: TComboBox
+        Left = 16
+        Top = 120
+        Width = 121
+        Height = 21
+        ItemIndex = 1
+        TabOrder = 4
+        Text = 'SSL v2.3'
+        Items.Strings = (
+          'SSL v2'
+          'SSL v2.3'
+          'SSL v3'
+          'TLS v1'
+          'TLS v1.1'
+          'TLS v1.2')
+      end
+      object cbbModo: TComboBox
+        Left = 160
+        Top = 120
+        Width = 121
+        Height = 21
+        ItemIndex = 1
+        TabOrder = 5
+        Text = 'Client'
+        Items.Strings = (
+          'Unassigned'
+          'Client'
+          'Server'
+          'Both')
       end
     end
   end
-  object IdSSLIOHandlerSocketOpenSSL: TIdSSLIOHandlerSocketOpenSSL
-    Destination = ':465'
-    MaxLineAction = maException
-    Port = 465
-    DefaultPort = 0
-    SSLOptions.Method = sslvSSLv23
-    SSLOptions.SSLVersions = [sslvSSLv2, sslvSSLv3, sslvTLSv1, sslvTLSv1_1, sslvTLSv1_2]
-    SSLOptions.Mode = sslmClient
-    SSLOptions.VerifyMode = []
-    SSLOptions.VerifyDepth = 0
-    Left = 488
-    Top = 56
-  end
-  object IdSMTP: TIdSMTP
-    IOHandler = IdSSLIOHandlerSocketOpenSSL
-    Port = 465
-    SASLMechanisms = <>
-    UseTLS = utUseImplicitTLS
-    Left = 488
-    Top = 96
-  end
-  object IdMessage: TIdMessage
-    AttachmentEncoding = 'MIME'
-    BccList = <>
-    CCList = <>
-    Encoding = meDefault
-    FromList = <
-      item
-      end>
-    Recipients = <>
-    ReplyTo = <>
-    ConvertPreamble = True
-    Left = 488
-    Top = 136
+  object OpenDialog: TOpenDialog
+    Options = [ofHideReadOnly, ofAllowMultiSelect, ofEnableSizing]
+    Left = 588
+    Top = 32
   end
 end
